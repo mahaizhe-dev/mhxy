@@ -1,10 +1,10 @@
 const $ = selector => document.querySelector(selector);
 const $$ = selector => [...document.querySelectorAll(selector)];
 
-const state = { snapshot: null, view: 'prices', activeShop: null, query: '', imageReady: false };
+const state = { snapshot: null, view: 'prices', activeShop: null, activeDungeonTab: 'dungeons', query: '' };
 
 function esc(value) {
-  return String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
+  return String(value ?? '').replace(/["<>"'']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'"': '&#39;'}[char]));
 }
 
 function fmt(value, digits = 2) {
@@ -42,7 +42,7 @@ function renderMarket(side, target, empty) {
   $(empty).hidden = items.length > 0;
 }
 
-function activeShop() {
+function acctiveShop() {
   const shops = state.snapshot?.pointShops?.shops || [];
   return shops.find(shop => shop.id === state.activeShop) || shops[0] || null;
 }
@@ -51,7 +51,7 @@ function renderPoints() {
   const shops = state.snapshot?.pointShops?.shops || [];
   if (!state.activeShop && shops[0]) state.activeShop = shops[0].id;
   const shop = activeShop();
-  $('#pointTabs').innerHTML = shops.map(entry => `<button class="point-tab ${entry.id === shop?.id ? 'active' : ''}" data-shop="${esc(entry.id)}">${esc(entry.title)}</button>`).join('');
+  $('#pointTabs').innerHTML = shops.map(entry => `<button class="point-tab ${entry.id === shop?.id ? 'active' : ''}" data-shop="${esc(entry.id)}">$2Data${esc(entry.title)}</button>`).join('');
   $('#pointDescription').textContent = shop?.description || '';
   const rows = [...(shop?.items || [])].sort((left, right) => {
     const a = Number(left.valuePerPointWan); const b = Number(right.valuePerPointWan);
@@ -63,70 +63,83 @@ function renderPoints() {
   $('#pointEmpty').hidden = rows.length > 0;
 }
 
-function renderAll() {
-  renderMarket('buy', '#buyMatrix', '#buyEmpty');
-  renderMarket('sell', '#sellMatrix', '#sellEmpty');
-  renderPoints();
-  const published = state.snapshot?.publishedAt;
-  $('#publishedAt').textContent = published ? `å‘å¸ƒäº ${new Date(published).toLocaleString('zh-CN', { hour12: false })}` : 'è¡Œæƒ…å¿«ç…§';
+function publicDungeonRows() {
+  const data = state.snapshot?.dungeonShenqi || {};
+  return state.activeDungeonTab === 'dungeons' ? (data.dungeons || []) : (data.shenqi || []);
 }
 
-function roundRect(ctx, x, y, width, height, radius) {
-  const r = Math.min(radius, width / 2, height / 2);
-  ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + width, y, x + width, y + height, r); ctx.arcTo(x + width, y + height, x, y + height, r); ctx.arcTo(x, y + height, x, y, r); ctx.arcTo(x, y, x + width, y, r); ctx.closePath();
-}
+function renderDungeonShenqi() {
+  const data = state.snapshot?.dungeonShenqi || {};
+  const isDungeon = state.activeDungeonTab === 'dungeons';
+  const rows = publicDungeonRows();
+  $$('#dungeonTabs [data-ds-tab]').forEach(tab => tab.classList.toggle('active', tab.dataset.dsTab === state.activeDungeonTab));
+  $('#dungeonDescription').textContent = data.description || '';
+  $('#dungeonTimestamp').textContent = data.generatedAt ? `æ•°æ®æ›´æ–°äº ${new Date(data.generatedAt).toLocaleString('zh-CN', { hour12: false })}` : 'å…¬å¼€çš„ 129 çº§ç•Œç©æœæ”¶ç›Šå¿«ç…§ã€‚';
+  $('#dungeonTableHead').innerHTML = isDungeon
+    ? '<tr><th>å‰¯æœ¬åç§°</th><th>éš¾åº¦</th><th>ç»éªŒ(ä¸‡ï¼™</th><th>é‡‘å¤†(ä¸‡ï¼™</th><th>å‰¯æœ¬ç¬¦åˆ†</th><th>å‚¨å¤‡é‡‘èï¼ˆåŠ¡ï¼‰</th><th>è€—æ—¶ï¼ˆåˆ†ï¼‰</th><th>æŒæ‰</th><th>å¤‡æ³¨</th></tr>'
+    : '<tr><th>å™¨åç§°</th><th>ç±»å‹</th><th>éš¾åº¦</th><th>ç»éªŒ(ä¸‡ï¼™</th><th>é‡‘å¤†(ä¸‡ï¼™</th><th>ç˜æœ¬ç¬¦å!İ¹`ª9i!úaäz;ï"9b¨{ï"Oİº %ù¥í»ï"9b!»ï"Oİ¹."¹.©:`dùamÏİ¹i!ù¬êİİ‰ÎÂˆ	
+	ÈÙ[™Ù[Û•X›T›İÜÉÊKš[›™\’SH›İÜË›X\
+›İÈOˆ\Ñ[™Ù[Û‚ˆÈİ›Û™Ï‰Ù\ØÊ›İË›˜[YJ_OÜİ›Û™Ïİ‰Ù\ØÊ›İË™Y™šXİ[H	ø %	Ê_Oİ‰Ù›]
+›İË™^Ø[‹
+_Oİ‰Ù›]
+›İË™ÛÛØ[‹
+_Oİ‰Ù›]
+›İËœÚ[Ë
+_Oİ‰Ù›]
+›İËœ™\Ù\™QÛÛØ[‹
+_Oİ‰Ù›]
+›İË[YSZ[‹
+_Oİ‰Ù\ØÊ
+›İË™›ÜÈ×JKš›Ú[Š	øà IÊH	ø %	Ê_Oİ‰Ù\ØÊ›İË››İ\È	ø %	Ê_Oİİ˜ˆˆİ›Û™Ï‰Ù\ØÊ›İË›˜[YJ_OÜİ›Û™Ïİ‰Ù\ØÊ›İË\H	ø %	Ê_Oİ‰Ù\ØÊ›İË™Y™šXİ[H	ø %	Ê_Oİ‰Ù›]
+›İË™^Ø[‹
+_Oİ‰Ù›]
+›İË™ÛÛØ[‹
+_Oİ‰Ù›]
+›İËœÚ[Ë
+_Oİ‰Ù›]
+›İËœ™\Ù\™QÛÛØ[‹
+_Oİ‰Ù›]
+›İË[YSZ[‹
+_Oİ‰Ù\ØÊ›İËœ™\]Z\™Y][H	ø %	Ê_Oİ‰Ù\ØÊ›İË››İ\È	ø %	Ê_Oİİ˜
+Kš›Ú[Š	ÉÊNÂˆ	
+	ÈÙ[™Ù[Û‘[\IÊKšY[ˆH›İÜË›[™İˆÂŸB‚™[˜İ[Ûˆ™[™\[
 
-function loadImage(src) {
-  return new Promise((resolve, reject) => { const image = new Image(); image.onload = () => resolve(image); image.onerror = reject; image.src = src; });
-}
+HÂˆ™[™\“X\šÙ]
+	Ø^IË	ÈØ^SX]š^	Ë	ÈØ^Q[\IÊNÂˆ™[™\“X\šÙ]
+	ÜÙ[	Ë	ÈÜÙ[X]š^	Ë	ÈÜÙ[[\IÊNÂˆ™[™\”Ú[Ê
+NÂˆ™[™\‘[™Ù[Û”Ú[œZJ
+NÂˆÛÛœİX›\ÚYHİ]KœÛ˜\ÚİËœX›\ÚY]Âˆ	
+	ÈÜX›\ÚY]	ÊK^ÛÛ[HX›\ÚYÈ9cäyn ù.£ˆ	Û™]È]JX›\ÚY
+KÓØØ[Tİš[™Ê	ŞšPÓ‰ËÈİ\ŒLˆ˜[ÙHJ_Xˆ	ú(c9 áyoêùáiÉÎÂŸB‚˜\Ş[˜È[˜İ[ÛˆØY
 
-function fitText(ctx, text, x, y, maxWidth) {
-  let value = String(text ?? '');
-  while (value.length > 1 && ctx.measureText(value + 'â€¦').width > maxWidth) value = value.slice(0, -1);
-  ctx.fillText(value.length < String(text ?? '').length ? value + 'â€¦' : value, x, y);
-}
+HÂˆÛÛœİ™\ÜÛœÙHH]ØZ]™]Ú
+Ú[™İË”P“P×ÔÓTÒÕÈØXÚNˆ	Û›Ë\İÜ™IÈJNÂˆYˆ
+\™\ÜÛœÙK›ÚÊH›İÈ™]È\œ›ÜŠ:(c9 áyk¯yâ­¹b¨9b$9i,z-){ï&‰Ü™\ÜÛœÙKœİ]\ßX
+NÂˆİ]KœÛ˜\ÚİH]ØZ]™\ÜÛœÙKšœÛÛŠ
+NÈ™[™\[
 
-async function generateImage() {
-  const rows = filteredItems('buy');
-  if (!rows.length) return;
-  const canvas = $('#quoteCanvas');
-  const width = 1200; const margin = 28; const columns = 5; const gap = 10; const cardWidth = Math.floor((width - margin * 2 - gap * (columns - 1)) / columns); const cardHeight = 88;
-  const groups = new Map(); rows.forEach(item => groups.set(item.category, [...(groups.get(item.category) || []), item]));
-  let height = 112; [...groups.values()].forEach(items => { height += 34 + Math.ceil(items.length / columns) * (cardHeight + gap) + 16; });
-  const scale = Math.max(2, Math.ceil(window.devicePixelRatio || 1)); canvas.width = width * scale; canvas.height = height * scale; canvas.style.width = '100%'; canvas.style.height = 'auto';
-  const ctx = canvas.getContext('2d'); ctx.setTransform(scale, 0, 0, scale, 0, 0);
-  const gradient = ctx.createLinearGradient(0, 0, width, height); gradient.addColorStop(0, '#dff8fa'); gradient.addColorStop(1, '#b8e7ee'); ctx.fillStyle = gradient; ctx.fillRect(0, 0, width, height);
-  ctx.fillStyle = 'rgba(255,255,255,.9)'; roundRect(ctx, 16, 16, width - 32, height - 32, 16); ctx.fill(); ctx.strokeStyle = 'rgba(181,138,42,.38)'; ctx.stroke();
-  ctx.fillStyle = '#168f83'; ctx.font = '700 11px "Microsoft YaHei UI", sans-serif'; ctx.fillText('PUBLIC MARKET SNAPSHOT', margin, 42); ctx.fillStyle = '#176f81'; ctx.font = '600 29px "Microsoft YaHei UI", sans-serif'; ctx.fillText('å•†äººæ”¶è´­ä»·', margin, 76); ctx.fillStyle = '#5e7b84'; ctx.font = '12px "Microsoft YaHei UI", sans-serif'; ctx.fillText(`å‘å¸ƒäº ${new Date(state.snapshot.publishedAt).toLocaleString('zh-CN', { hour12: false })}`, margin + 162, 75);
-  const icons = new Map(); await Promise.all(rows.map(async item => { const src = state.snapshot.icons?.[item.name]; if (src && !icons.has(src)) { try { icons.set(src, await loadImage(src)); } catch { icons.set(src, null); } } }));
-  let y = 112;
-  for (const [category, items] of groups) {
-    ctx.fillStyle = '#a77616'; ctx.font = '13px "Microsoft YaHei UI", sans-serif'; ctx.fillText(category, margin, y); y += 26;
-    items.forEach((item, index) => {
-      const x = margin + (index % columns) * (cardWidth + gap); const cy = y + Math.floor(index / columns) * (cardHeight + gap);
-      ctx.fillStyle = 'rgba(255,255,255,.9)'; roundRect(ctx, x, cy, cardWidth, cardHeight, 10); ctx.fill(); ctx.strokeStyle = 'rgba(22,143,131,.25)'; ctx.stroke();
-      const iconX = x + 10; const iconY = cy + 19; ctx.fillStyle = 'rgba(232,252,248,.9)'; roundRect(ctx, iconX, iconY, 42, 42, 8); ctx.fill();
-      const image = icons.get(state.snapshot.icons?.[item.name]); if (image) ctx.drawImage(image, iconX + 3, iconY + 3, 36, 36); else { ctx.fillStyle = '#168fc0'; ctx.beginPath(); ctx.arc(iconX + 21, iconY + 21, 17, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = '#fff'; ctx.font = '700 15px "Microsoft YaHei UI", sans-serif'; ctx.textAlign = 'center'; ctx.fillText(item.name.slice(0, 1), iconX + 21, iconY + 26); ctx.textAlign = 'left'; }
-      const textX = iconX + 50; ctx.fillStyle = '#215164'; ctx.font = '14px "Microsoft YaHei UI", sans-serif'; fitText(ctx, item.name, textX, cy + 39, cardWidth - 70); ctx.fillStyle = '#168f83'; ctx.font = '700 19px Georgia, serif'; const price = fmt(item.buy.median); ctx.fillText(price, textX, cy + 67); ctx.fillStyle = '#5e7b84'; ctx.font = '9px "Microsoft YaHei UI", sans-serif'; ctx.fillText('ä¸‡ä¸¤', textX + ctx.measureText(price).width + 4, cy + 66);
-    });
-    y += Math.ceil(items.length / columns) * (cardHeight + gap) + 20;
-  }
-  state.imageReady = true; $('#quoteEmpty').hidden = true; $('#saveImage').disabled = false;
-}
+NÂŸB‚‰	
+	ËX‰ÊK™›Ü‘XXÚ
+]ÛˆOˆ]Û‹˜Y]™[\İ[™\Š	ØÛXÚÉË
 
-function saveImage() {
-  if (!state.imageReady) return;
-  $('#quoteCanvas').toBlob(blob => { const link = document.createElement('a'); link.download = 'å•†äººæ”¶è´­ä»·.png'; link.href = URL.createObjectURL(blob); link.click(); setTimeout(() => URL.revokeObjectURL(link.href), 500); }, 'image/png');
-}
+HOˆÈİ]KšY]ÈH]Û‹™]\Ù]šY]ÎÈ		
+	ËX‰ÊK™›Ü‘XXÚ
+XˆOˆX‹˜Û\ÜÓ\İÙÙÛJ	ØXİ]™IËXˆOOH]ÛŠJNÈ		
+	ËšY]ÉÊK™›Ü‘XXÚ
+šY]ÈOˆšY]Ë˜Û\ÜÓ\İÙÙÛJ	ØXİ]™IËšY]ËšYOOHšY]ËIÜİ]KšY]ßX
+JNÈJJNÂ‰
+	ÈÜšXÙTÙX\˜Ú	ÊK˜Y]™[\İ[™\Š	Ú[œ]	Ë]™[OˆÈİ]Kœ]Y\HH]™[\™Ù]˜[YNÈ™[™\“X\šÙ]
+	Ø^IË	ÈØ^SX]š^	Ë	ÈØ^Q[\IÊNÈ™[™\“X\šÙ]
+	ÜÙ[	Ë	ÈÜÙ[X]š^	Ë	ÈÜÙ[[\IÊNÈJNÂ‰
+	ÈÜÚ[XœÉÊK˜Y]™[\İ[™\Š	ØÛXÚÉË]™[OˆÈÛÛœİ]ÛˆH]™[\™Ù]˜ÛÜÙ\İ
+	ÖÙ]K\ÚÜIÊNÈYˆ
+X]ÛŠH™]\›Èİ]K˜Xİ]™TÚÜH]Û‹™]\Ù]œÚÜÈ™[™\”Ú[Ê
+NÈJNÂ‰
+	ÈÙ[™Ù[Û•XœÉÊK˜Y]™[\İ[™\Š	ØÛXÚÉË]™[OˆÈÛÛœİ]ÛˆH]™[\™Ù]˜ÛÜÙ\İ
+	ÖÙ]KYË]X—IÊNÈYˆ
+X]ÛŠH™]\›Èİ]K˜XØİ]™Q[™Ù[Û•XˆH]Û‹™]\Ù]™ÕXÈ™[™\‘[™Ù[Û”Ú[œZJ
+NÈJNÂ›ØY
 
-async function load() {
-  const response = await fetch(window.PUBLIC_SNAPSHOT, { cache: 'no-store' });
-  if (!response.ok) throw new Error(`è¡Œæƒ…å¿«ç…§è¯»å–å¤±è´¥ï¼š${response.status}`);
-  state.snapshot = await response.json(); renderAll();
-}
-
-$$('.tab').forEach(button => button.addEventListener('click', () => { state.view = button.dataset.view; $$('.tab').forEach(tab => tab.classList.toggle('active', tab === button)); $$('.view').forEach(view => view.classList.toggle('active', view.id === `view-${state.view}`)); }));
-$('#priceSearch').addEventListener('input', event => { state.query = event.target.value; renderMarket('buy', '#buyMatrix', '#buyEmpty'); renderMarket('sell', '#sellMatrix', '#sellEmpty'); });
-$('#pointTabs').addEventListener('click', event => { const button = event.target.closest('[data-shop]'); if (!button) return; state.activeShop = button.dataset.shop; renderPoints(); });
-$('#generateImage').addEventListener('click', generateImage); $('#saveImage').addEventListener('click', saveImage);
-load().catch(error => { $('#publishedAt').textContent = error.message; });
+K˜Ø]Ú
+\œ›ÜˆOˆÈ	
+	ÈÜX›\ÚY]	ÊK^ÛÛ[H\œ›Ü‹›Y\ÜØYÙNÈJNÂ
