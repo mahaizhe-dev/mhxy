@@ -74,7 +74,7 @@ function renderDungeonShenqi() {
   const rows = publicDungeonRows();
   $$('#dungeonTabs [data-ds-tab]').forEach(tab => tab.classList.toggle('active', tab.dataset.dsTab === state.activeDungeonTab));
   $('#dungeonDescription').textContent = data.description || '';
-  $('#dungeonTimestamp').textContent = data.generatedAt ? `数据更新于 ${new Date(data.generatedAt).toLocaleString('zh-CN', { hour12: false })}` : '公开的 129 级界玩服收益快照。';
+  $('#dungeonTimestamp').textContent = data.generatedAt ? `数据更新于 ${new Date(data.generatedAt).toLocaleString('zh-CN', { hour12: false })}` : '公开的 129 级畅玩服收益快照。';
   $('#dungeonTableHead').innerHTML = isDungeon
     ? '<tr><th>副本名称</th><th>难度</th><th>经验（万）</th><th>金币（万）</th><th>副本积分</th><th>储备金（万）</th><th>耗时（分）</th><th>掉落</th><th>备注</th></tr>'
     : '<tr><th>神器名称</th><th>类型</th><th>难度</th><th>经验（万）</th><th>金钱（万）</th><th>神器积分</th><th>储备金（万）</th><th>耗时（分）</th><th>上交道具</th><th>备注</th></tr>';
