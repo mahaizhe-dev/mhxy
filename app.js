@@ -4,7 +4,7 @@ const $$ = selector => [...document.querySelectorAll(selector)];
 const state = { snapshot: null, view: 'prices', activeShop: null, activeDungeonTab: 'dungeons', query: '' };
 
 function esc(value) {
-  return String(value ?? '').replace(/["<>"'']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'"': '&#39;'}[char]));
+  return String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
 }
 
 function fmt(value, digits = 2) {
@@ -42,7 +42,7 @@ function renderMarket(side, target, empty) {
   $(empty).hidden = items.length > 0;
 }
 
-function acctiveShop() {
+function activeShop() {
   const shops = state.snapshot?.pointShops?.shops || [];
   return shops.find(shop => shop.id === state.activeShop) || shops[0] || null;
 }
@@ -51,7 +51,7 @@ function renderPoints() {
   const shops = state.snapshot?.pointShops?.shops || [];
   if (!state.activeShop && shops[0]) state.activeShop = shops[0].id;
   const shop = activeShop();
-  $('#pointTabs').innerHTML = shops.map(entry => `<button class="point-tab ${entry.id === shop?.id ? 'active' : ''}" data-shop="${esc(entry.id)}">$2Data${esc(entry.title)}</button>`).join('');
+  $('#pointTabs').innerHTML = shops.map(entry => `<button class="point-tab ${entry.id === shop?.id ? 'active' : ''}" data-shop="${esc(entry.id)}">${esc(entry.title)}</button>`).join('');
   $('#pointDescription').textContent = shop?.description || '';
   const rows = [...(shop?.items || [])].sort((left, right) => {
     const a = Number(left.valuePerPointWan); const b = Number(right.valuePerPointWan);
@@ -76,70 +76,31 @@ function renderDungeonShenqi() {
   $('#dungeonDescription').textContent = data.description || '';
   $('#dungeonTimestamp').textContent = data.generatedAt ? `æ•°æ®æ›´æ–°äº ${new Date(data.generatedAt).toLocaleString('zh-CN', { hour12: false })}` : 'å…¬å¼€çš„ 129 çº§ç•Œç©æœæ”¶ç›Šå¿«ç…§ã€‚';
   $('#dungeonTableHead').innerHTML = isDungeon
-    ? '<tr><th>å‰¯æœ¬åç§°</th><th>éš¾åº¦</th><th>ç»éªŒ(ä¸‡ï¼™</th><th>é‡‘å¤†(ä¸‡ï¼™</th><th>å‰¯æœ¬ç¬¦åˆ†</th><th>å‚¨å¤‡é‡‘èï¼ˆåŠ¡ï¼‰</th><th>è€—æ—¶ï¼ˆåˆ†ï¼‰</th><th>æŒæ‰</th><th>å¤‡æ³¨</th></tr>'
-    : '<tr><th>å™¨åç§°</th><th>ç±»å‹</th><th>éš¾åº¦</th><th>ç»éªŒ(ä¸‡ï¼™</th><th>é‡‘å¤†(ä¸‡ï¼™</th><th>ç˜æœ¬ç¬¦å!İ¹`ª9i!úaäz;ï"9b¨{ï"Oİº %ù¥í»ï"9b!»ï"Oİ¹."¹.©:`dùamÏİ¹i!ù¬êİİ‰ÎÂˆ	
-	ÈÙ[™Ù[Û•X›T›İÜÉÊKš[›™\’SH›İÜË›X\
-›İÈOˆ\Ñ[™Ù[Û‚ˆÈİ›Û™Ï‰Ù\ØÊ›İË›˜[YJ_OÜİ›Û™Ïİ‰Ù\ØÊ›İË™Y™šXİ[H	ø %	Ê_Oİ‰Ù›]
-›İË™^Ø[‹
-_Oİ‰Ù›]
-›İË™ÛÛØ[‹
-_Oİ‰Ù›]
-›İËœÚ[Ë
-_Oİ‰Ù›]
-›İËœ™\Ù\™QÛÛØ[‹
-_Oİ‰Ù›]
-›İË[YSZ[‹
-_Oİ‰Ù\ØÊ
-›İË™›ÜÈ×JKš›Ú[Š	øà IÊH	ø %	Ê_Oİ‰Ù\ØÊ›İË››İ\È	ø %	Ê_Oİİ˜ˆˆİ›Û™Ï‰Ù\ØÊ›İË›˜[YJ_OÜİ›Û™Ïİ‰Ù\ØÊ›İË\H	ø %	Ê_Oİ‰Ù\ØÊ›İË™Y™šXİ[H	ø %	Ê_Oİ‰Ù›]
-›İË™^Ø[‹
-_Oİ‰Ù›]
-›İË™ÛÛØ[‹
-_Oİ‰Ù›]
-›İËœÚ[Ë
-_Oİ‰Ù›]
-›İËœ™\Ù\™QÛÛØ[‹
-_Oİ‰Ù›]
-›İË[YSZ[‹
-_Oİ‰Ù\ØÊ›İËœ™\]Z\™Y][H	ø %	Ê_Oİ‰Ù\ØÊ›İË››İ\È	ø %	Ê_Oİİ˜
-Kš›Ú[Š	ÉÊNÂˆ	
-	ÈÙ[™Ù[Û‘[\IÊKšY[ˆH›İÜË›[™İˆÂŸB‚™[˜İ[Ûˆ™[™\[
+    ? '<tr><th>å‰¯æœ¬åç§°</th><th>éš¾åº¦</th><th>ç»éªŒï¼ˆä¸‡ï¼‰</th><th>é‡‘å¸ï¼ˆä¸‡ï¼‰</th><th>å‰¯æœ¬ç§¯åˆ†</th><th>å‚¨å¤‡é‡‘ï¼ˆä¸‡ï¼‰</th><th>è€—æ—¶ï¼ˆåˆ†ï¼‰</th><th>æ‰è½</th><th>å¤‡æ³¨</th></tr>'
+    : '<tr><th>ç¥å™¨åç§°</th><th>ç±»å‹</th><th>éš¾åº¦</th><th>ç»éªŒï¼ˆä¸‡ï¼‰</th><th>é‡‘é’±ï¼ˆä¸‡ï¼‰</th><th>ç¥å™¨ç§¯åˆ†</th><th>å‚¨å¤‡é‡‘ï¼ˆä¸‡ï¼‰</th><th>è€—æ—¶ï¼ˆåˆ†ï¼‰</th><th>ä¸Šäº¤é“å…·</th><th>å¤‡æ³¨</th></tr>';
+  $('#dungeonTableRows').innerHTML = rows.map(row => isDungeon
+    ? `<tr><td><strong>${esc(row.name)}</strong></td><td>${esc(row.difficulty || 'â€”')}</td><td>${fmt(row.expWan, 4)}</td><td>${fmt(row.goldWan, 4)}</td><td>${fmt(row.points, 0)}</td><td>${fmt(row.reserveGoldWan, 4)}</td><td>${fmt(row.timeMin, 0)}</td><td>${esc((row.drops || []).join('ã€') || 'â€”')}</td><td>${esc(row.notes || 'â€”')}</td></tr>`
+    : `<tr><td><strong>${esc(row.name)}</strong></td><td>${esc(row.type || 'â€”')}</td><td>${esc(row.difficulty || 'â€”')}</td><td>${fmt(row.expWan, 4)}</td><td>${fmt(row.goldWan, 4)}</td><td>${fmt(row.points, 0)}</td><td>${fmt(row.reserveGoldWan, 4)}</td><td>${fmt(row.timeMin, 0)}</td><td>${esc(row.requiredItem || 'â€”')}</td><td>${esc(row.notes || 'â€”')}</td></tr>`).join('');
+  $('#dungeonEmpty').hidden = rows.length > 0;
+}
 
-HÂˆ™[™\“X\šÙ]
-	Ø^IË	ÈØ^SX]š^	Ë	ÈØ^Q[\IÊNÂˆ™[™\“X\šÙ]
-	ÜÙ[	Ë	ÈÜÙ[X]š^	Ë	ÈÜÙ[[\IÊNÂˆ™[™\”Ú[Ê
-NÂˆ™[™\‘[™Ù[Û”Ú[œZJ
-NÂˆÛÛœİX›\ÚYHİ]KœÛ˜\ÚİËœX›\ÚY]Âˆ	
-	ÈÜX›\ÚY]	ÊK^ÛÛ[HX›\ÚYÈ9cäyn ù.£ˆ	Û™]È]JX›\ÚY
-KÓØØ[Tİš[™Ê	ŞšPÓ‰ËÈİ\ŒLˆ˜[ÙHJ_Xˆ	ú(c9 áyoêùáiÉÎÂŸB‚˜\Ş[˜È[˜İ[ÛˆØY
+function renderAll() {
+  renderMarket('buy', '#buyMatrix', '#buyEmpty');
+  renderMarket('sell', '#sellMatrix', '#sellEmpty');
+  renderPoints();
+  renderDungeonShenqi();
+  const published = state.snapshot?.publishedAt;
+  $('#publishedAt').textContent = published ? `å‘å¸ƒäº ${new Date(published).toLocaleString('zh-CN', { hour12: false })}` : 'è¡Œæƒ…å¿«ç…§';
+}
 
-HÂˆÛÛœİ™\ÜÛœÙHH]ØZ]™]Ú
-Ú[™İË”P“P×ÔÓTÒÕÈØXÚNˆ	Û›Ë\İÜ™IÈJNÂˆYˆ
-\™\ÜÛœÙK›ÚÊH›İÈ™]È\œ›ÜŠ:(c9 áyk¯yâ­¹b¨9b$9i,z-){ï&‰Ü™\ÜÛœÙKœİ]\ßX
-NÂˆİ]KœÛ˜\ÚİH]ØZ]™\ÜÛœÙKšœÛÛŠ
-NÈ™[™\[
+async function load() {
+  const response = await fetch(window.PUBLIC_SNAPSHOT, { cache: 'no-store' });
+  if (!response.ok) throw new Error(`è¡Œæƒ…å¿«ç…§è¯»å–å¤±è´¥ï¼š${response.status}`);
+  state.snapshot = await response.json(); renderAll();
+}
 
-NÂŸB‚‰	
-	ËX‰ÊK™›Ü‘XXÚ
-]ÛˆOˆ]Û‹˜Y]™[\İ[™\Š	ØÛXÚÉË
-
-HOˆÈİ]KšY]ÈH]Û‹™]\Ù]šY]ÎÈ		
-	ËX‰ÊK™›Ü‘XXÚ
-XˆOˆX‹˜Û\ÜÓ\İÙÙÛJ	ØXİ]™IËXˆOOH]ÛŠJNÈ		
-	ËšY]ÉÊK™›Ü‘XXÚ
-šY]ÈOˆšY]Ë˜Û\ÜÓ\İÙÙÛJ	ØXİ]™IËšY]ËšYOOHšY]ËIÜİ]KšY]ßX
-JNÈJJNÂ‰
-	ÈÜšXÙTÙX\˜Ú	ÊK˜Y]™[\İ[™\Š	Ú[œ]	Ë]™[OˆÈİ]Kœ]Y\HH]™[\™Ù]˜[YNÈ™[™\“X\šÙ]
-	Ø^IË	ÈØ^SX]š^	Ë	ÈØ^Q[\IÊNÈ™[™\“X\šÙ]
-	ÜÙ[	Ë	ÈÜÙ[X]š^	Ë	ÈÜÙ[[\IÊNÈJNÂ‰
-	ÈÜÚ[XœÉÊK˜Y]™[\İ[™\Š	ØÛXÚÉË]™[OˆÈÛÛœİ]ÛˆH]™[\™Ù]˜ÛÜÙ\İ
-	ÖÙ]K\ÚÜIÊNÈYˆ
-X]ÛŠH™]\›Èİ]K˜Xİ]™TÚÜH]Û‹™]\Ù]œÚÜÈ™[™\”Ú[Ê
-NÈJNÂ‰
-	ÈÙ[™Ù[Û•XœÉÊK˜Y]™[\İ[™\Š	ØÛXÚÉË]™[OˆÈÛÛœİ]ÛˆH]™[\™Ù]˜ÛÜÙ\İ
-	ÖÙ]KYË]X—IÊNÈYˆ
-X]ÛŠH™]\›Èİ]K˜XØİ]™Q[™Ù[Û•XˆH]Û‹™]\Ù]™ÕXÈ™[™\‘[™Ù[Û”Ú[œZJ
-NÈJNÂ›ØY
-
-K˜Ø]Ú
-\œ›ÜˆOˆÈ	
-	ÈÜX›\ÚY]	ÊK^ÛÛ[H\œ›Ü‹›Y\ÜØYÙNÈJNÂ
+$$('.tab').forEach(button => button.addEventListener('click', () => { state.view = button.dataset.view; $$('.tab').forEach(tab => tab.classList.toggle('active', tab === button)); $$('.view').forEach(view => view.classList.toggle('active', view.id === `view-${state.view}`)); }));
+$('#priceSearch').addEventListener('input', event => { state.query = event.target.value; renderMarket('buy', '#buyMatrix', '#buyEmpty'); renderMarket('sell', '#sellMatrix', '#sellEmpty'); });
+$('#pointTabs').addEventListener('click', event => { const button = event.target.closest('[data-shop]'); if (!button) return; state.activeShop = button.dataset.shop; renderPoints(); });
+$('#dungeonTabs').addEventListener('click', event => { const button = event.target.closest('[data-ds-tab]'); if (!button) return; state.activeDungeonTab = button.dataset.dsTab; renderDungeonShenqi(); });
+load().catch(error => { $('#publishedAt').textContent = error.message; });
