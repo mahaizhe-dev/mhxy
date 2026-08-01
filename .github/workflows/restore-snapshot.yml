@@ -15,15 +15,19 @@ jobs:
           from pathlib import Path
           import base64, gzip, hashlib, json
           encoded = ''.join((Path('_snapshot_upload') / f'part{i:02d}.txt').read_text().strip() for i in range(11))
-          raw = gzip.decompress(base64.b64decode(encoded))
-          assert len(raw) == 124860, len(raw)
-          assert hashlib.sha256(raw).hexdigest() == 'b2c2584334b10971b0777d2da123a633606f9ec474192b6c6c41a5109682fe12'
+          print('encoded bytes', len(encoded))
+          compressed = base64.b64decode(encoded, validate=True)
+          print('compressed bytes', len(compressed), hashlib.sha256(compressed).hexdigest())
+          raw = gzip.decompress(compressed)
+          print('raw bytes', len(raw), hashlib.sha256(raw).hexdigest())
+          if len(raw) != 124860 or hashlib.sha256(raw).hexdigest() != 'b2c2584334b10971b0777d2da123a633606f9ec474192b6c6c41a5109682fe12':
+              raise SystemExit('verified snapshot checksum mismatch')
           json.loads(raw.decode('utf-8'))
           Path('snapshot.9e2adf57f09de4f0.json').write_bytes(raw)
           PY
           rm -rf _snapshot_upload
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add snapshot.9e2adf57f09de4f0.json _snapshot_upload
+          git add -A
           git commit -m "Restore verified public snapshot and clean upload parts"
           git push
