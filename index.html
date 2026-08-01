@@ -1,1 +1,51 @@
-PLACEHOLDER
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#c6f1f4">
+  <title>三界物价录 · 只读分享</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="bright-overrides.css">
+  <link rel="stylesheet" href="unified-overrides.css">
+</head>
+<body>
+  <div class="sky-layer" aria-hidden="true"><i></i><i></i><i></i></div>
+  <header class="topbar">
+    <div class="brand-seal" aria-hidden="true">三<br>界</div>
+    <div class="brand-copy"><p class="eyebrow">PERSONAL MARKET LEDGER</p><h1>三界物价录</h1><p class="subtitle">珍宝阁 · 只读行情分享</p></div>
+    <div class="status"><span class="status-dot"></span><span id="generatedAt">等待数据</span></div>
+  </header>
+  <nav class="tabs" aria-label="主导航"><div class="primary-tabs" role="group" aria-label="核心结论"><button class="tab primary-tab active" data-view="prices">物价玉简</button><button class="tab primary-tab" data-view="points">积分兑换</button><button class="tab primary-tab" data-view="dungeon-shenqi">副本神器</button></div></nav>
+  <main>
+    <section id="view-prices" class="view active">
+      <div class="hero-grid"><article class="metric"><span>观测周期</span><strong>三十日</strong><small>往昔样本仍存于卷宗</small></article><article class="metric"><span>在录珍品</span><strong id="itemCount">0</strong><small>拥有有效行情的物品</small></article><article class="metric"><span>有效行情</span><strong id="quoteCount">0</strong><small>仅展示已确认的有效行情</small></article></div>
+      <section class="matrix-controls panel-jade"><div class="category-block"><span class="control-label">品类灵签</span><div id="categoryChips" class="category-chips"></div></div><div class="matrix-search-wrap"><label class="matrix-search"><span aria-hidden="true">⌕</span><input id="priceSearch" placeholder="寻物或寻类…" autocomplete="off"></label><button id="clearHighlight" class="text-button" hidden>清除灵光</button><span id="matchCount" class="match-count">展示全部物价</span></div></section>
+      <section class="price-section buy-section"><header class="section-banner"><div><p class="eyebrow">MERCHANT BUYING</p><h2>商人收购价</h2><p>快速变现参考 · 主牌显示近三十日收购中位数</p></div><span class="section-emblem">收</span></header><div id="buyMatrix" class="category-matrix"></div><div id="buyEmpty" class="empty">暂无商人收购行情。</div></section>
+      <div class="cloud-divider" aria-hidden="true"><span></span></div>
+      <section class="price-section sell-section"><header class="section-banner"><div><p class="eyebrow">PLAYER SELLING</p><h2>玩家出售价</h2><p>挂售行情参考 · 仅陈列拥有出售价样本的珍品</p></div><span class="section-emblem">售</span></header><div id="sellMatrix" class="category-matrix"></div><div id="sellEmpty" class="empty">当前卷宗尚未收录玩家出售价。</div></section>
+    </section>
+    <section id="view-points" class="view ledger-view point-ledger-view"><div class="section-heading"><div><p class="eyebrow">POINT EXCHANGE LEDGER</p><h2>积分兑换</h2></div><p class="muted">手动指定价格优先于行情；未指定时按玩家出售价中位数、商人收购价中位数依次取价。</p></div><div id="pointShopTabs" class="point-shop-tabs" aria-label="积分商店"></div><section class="panel point-shop-panel"><div class="point-shop-toolbar"><div><p id="pointShopDescription" class="muted"></p><small id="pointShopHint" class="point-shop-hint"></small></div></div><div class="point-shop-table-wrap"><table class="point-shop-table"><thead><tr><th>兑换物</th><th class="point-priority-heading">所需积分</th><th class="point-priority-heading">参考价格</th><th class="point-priority-heading">每积分价值 ↓<br><small>万两 · 高到低</small></th><th>数量</th></tr></thead><tbody id="pointShopRows"></tbody></table></div><div id="pointShopEmpty" class="empty">尚未收录兑换物。</div></section></section>
+    <section id="view-dungeon-shenqi" class="view ledger-view gameplay-ledger-view">
+    <div class="section-heading"><div><p class="eyebrow">DUNGEON &amp; ARTIFACT LEDGER</p><h2>副本神器</h2></div><p class="muted" id="dungeonTimestamp">等待加载数据</p></div>
+    <p class="muted" id="dungeonDescription"></p>
+    <div id="dungeonShenqiTabs" class="point-shop-tabs gameplay-revenue-tabs" aria-label="玩法收益子面板"><button class="point-shop-tab active" data-ds-tab="dungeons">副本</button><button class="point-shop-tab" data-ds-tab="shenqi">神器</button><button class="point-shop-tab" data-ds-tab="ghost-hunt">抓鬼、封妖</button><button class="point-shop-tab" data-ds-tab="activities">活动</button></div>
+
+    <section id="ghostHuntPanel" hidden>
+      <section class="panel ghost-hunt-overview"><div><p class="eyebrow">GHOST HUNT · 1–10 RINGS</p><h3>抓鬼十环汇总 <span class="ghost-hunt-double">双倍默认开启</span></h3><p class="muted">抓鬼共 1–10 环，经验逐环增加；第十环有概率获得道具。十环总收益优先展示，单环数据收纳在明细中。现金与储备金分列，储备金不折算现金。</p></div><div id="ghostHuntTotal" class="ghost-hunt-total"></div><button id="ghostHuntDetailToggle" class="dungeon-detail-toggle ghost-hunt-detail-toggle" type="button" aria-expanded="false">展开十环明细</button><div id="ghostHuntDetails" class="ghost-hunt-details" hidden><div class="ghost-hunt-rings" id="ghostHuntRings"></div><p id="ghostHuntEvidence" class="ghost-hunt-evidence"></p></div><section class="ghost-hunt-drops"><span>抓鬼奖励备注</span><div id="ghostHuntDrops"></div></section></section>
+    </section>
+    <section id="fengYaoPanel" hidden>
+      <section class="panel feng-yao-overview"><div><p class="eyebrow">FENG YAO · 25 MONSTERS</p><h3>封妖收益 <span class="feng-yao-status">普通、变异收益已确认</span></h3><p class="muted" id="fengYaoNotes"></p></div><div id="fengYaoDaily" class="feng-yao-daily"></div><section class="feng-yao-drops"><span>概率掉落</span><div id="fengYaoDrops"></div></section></section>
+    </section>
+    <section id="activityPanel" hidden>
+      <section class="panel activity-overview"><div><p class="eyebrow">ACTIVITY · DEMON SUBJUGATION</p><h3>降妖伏魔 <span class="activity-duration">活动时长 2 小时</span></h3><p class="muted" id="activityNotes"></p></div><div id="activityCards" class="activity-cards"></div><section class="activity-drops"><span>系统频道掉落</span><div id="activityDrops"></div><small id="activityDropStatus"></small></section></section>
+    </section>
+    <section class="panel point-shop-panel" id="dungeonTablePanel"><div class="dungeon-table-wrap point-shop-table-wrap"><table class="point-shop-table" id="dungeonTable"><thead id="dungeonTableHead"></thead><tbody id="dungeonTableBody"></tbody></table></div><div id="dungeonEmpty" class="empty">暂无玩法收益数据。</div></section>
+    <section id="dungeonCards" class="dungeon-card-grid" aria-label="副本资料单元"></section>
+  </section>
+  </main>
+  <div id="toast" class="toast" role="status"></div>
+  <script>window.PUBLIC_SNAPSHOT = "snapshot.bf5fdb0d9682e282.json";</script>
+  <script src="app.js"></script>
+</body>
+</html>

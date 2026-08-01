@@ -29,10 +29,8 @@ const $$ = selector => [...document.querySelectorAll(selector)];
 // maintenance control keeps working exactly as before.
 const PUBLIC_MODE = Boolean(window.PUBLIC_SNAPSHOT);
 
-// Null-safe event binding: public builds keep the full admin markup (hidden
-// via the .public-mode / .maint-only CSS rules) so every element referenced
-// here still exists today, but this guard keeps future markup trimming from
-// throwing on a missing element.
+// Null-safe event binding: public builds physically omit maintenance markup,
+// so handlers for local-only controls must tolerate a missing element.
 function on(selector, event, handler) {
   const el = $(selector);
   if (el) el.addEventListener(event, handler);
@@ -342,7 +340,7 @@ function dungeonMetricHtml(label, value, unit = '', primary = false) {
 }
 
 function dungeonStageTotals(dungeon) {
-  const stages = dungeon.stages || [];
+  const stages = (dungeon.stages || []).filter(stage => stage.countsTowardFlow !== false);
   return stages.reduce((totals, stage) => {
     const reward = stage.summary?.reward;
     if (!reward) return totals;
@@ -498,11 +496,92 @@ function ghostHuntHtml(data) {
   }
 }
 
+function fengYaoNumber(value) {
+  return value == null ? '待补充' : Number(value).toLocaleString('zh-CN');
+}
+
+function fengYaoHtml(data) {
+  const fengYao = data.fengYao || {};
+  const normal = fengYao.normal || {};
+  const mutant = fengYao.mutant || {};
+  const plan = fengYao.dailyPlan || {};
+  const yaopu = fengYao.yaopu || {};
+  const summary = fengYao.dailySummary || {};
+  $('#fengYaoNotes').textContent = fengYao.notes || '封妖资料待补充。';
+  const rewardCard = (reward, count, label) => `<article class="feng-yao-reward ${reward.status === '待补充' ? 'pending' : ''}"><header><strong>${esc(label)}</strong><span>${fengYaoNumber(count)} 个</span></header><div class="feng-yao-reward-grid"><div><span>经验</span><b>${fengYaoNumber(reward.experience)}</b></div><div><span>现金</span><b>${fengYaoNumber(reward.cash)}</b></div><div><span>储备金</span><b>${fengYaoNumber(reward.reserveGold)}</b></div></div><small>${esc(reward.evidence || reward.status || reward.incomeSource || '收益记录')}</small></article>`;
+  $('#fengYaoDaily').innerHTML = `${rewardCard(normal, plan.normalCount, normal.name || '普通封妖')}${rewardCard(mutant, plan.mutantCount, mutant.name || '变异封妖')}<article class="feng-yao-cost"><header><strong>25个妖谱成本</strong><span>${fengYaoNumber(summary.yaopuPoints)} 点</span></header><div><b>${fengYaoNumber(summary.yaopuCost)}</b><small>梦幻币</small></div><p>普通 ${fengYaoNumber(yaopu.normalCost)} 点/个 · 变异 ${fengYaoNumber(yaopu.mutantCost)} 点/个 · ${fengYaoNumber(yaopu.pricePerPoint)} 梦幻币/点</p></article><article class="feng-yao-total"><header><strong>25个妖汇总</strong><span>${esc(summary.status || '')}</span></header><div class="feng-yao-total-grid"><div><span>经验</span><b>${fengYaoNumber(summary.totalExperience)}</b></div><div><span>现金</span><b>${fengYaoNumber(summary.totalCash)}</b></div><div><span>储备金</span><b>${fengYaoNumber(summary.totalReserveGold)}</b></div></div><p>普通 ${fengYaoNumber(plan.normalCount)} 个：经验 ${fengYaoNumber(summary.normalExperience)} · 现金 ${fengYaoNumber(summary.normalCash)} · 储备金 ${fengYaoNumber(summary.normalReserveGold)}<br>变异 ${fengYaoNumber(plan.mutantCount)} 个：经验 ${fengYaoNumber(summary.mutantExperience)} · 现金 ${fengYaoNumber(summary.mutantCash)} · 储备金 ${fengYaoNumber(summary.mutantReserveGold)}</p></article>`;
+  $('#fengYaoDrops').innerHTML = (fengYao.probabilityDrops || []).map(item => `<span class="feng-yao-drop">${esc(item)}</span>`).join('') || '<span class="dungeon-summary-empty">待补充</span>';
+}
+
+function activityNumber(value) {
+  return value == null ? '待收集' : Number(value).toLocaleString('zh-CN');
+}
+
+function activityHtml(data) {
+  const activity = (data.activities || [])[0];
+  if (!activity) return;
+  const reward = activity.singleReward || {};
+  const summary = activity.summary || {};
+  const session = activity.session || {};
+  const metric = (label, value) => `<div><span>${label}</span><b>${activityNumber(value)}</b></div>`;
+  $('#activityNotes').textContent = activity.notes || '活动资料待补充。';
+  $('#activityCards').innerHTML = `<article class="activity-total"><header><strong>总收益</strong><span>${esc(summary.status || '待录入')}</span></header><div class="activity-metric-grid">${metric('经验', summary.experience)}${metric('现金', summary.cash)}${metric('学习储备金', summary.reserveGold)}${metric('活动轮次', summary.rounds)}${metric('铃铛数量', summary.bellCount)}</div><p>基础经验 ${activityNumber(summary.baseExperience)} · 盛福经验 ${activityNumber(summary.fortuneExperience)}（不计基础收益）</p></article><article class="activity-single"><header><strong>单怪实测</strong><span>${esc(reward.source || '用户确认')}</span></header><div class="activity-metric-grid">${metric('总经验', reward.experience)}${metric('现金', reward.cash)}${metric('学习储备金', reward.reserveGold)}</div><p>${esc(reward.evidence || '暂无单怪明细')}</p></article>`;
+  const dropGroups = activity.dropGroups || [];
+  $('#activityDrops').innerHTML = dropGroups.map(group => `<section class="activity-drop-group"><header><strong>${esc(group.type)}</strong><small>${Number(group.recordCount || 0).toLocaleString('zh-CN')} 条公告</small></header><div>${group.items?.length ? group.items.map(item => `<span class="activity-drop">${esc(item)}</span>`).join('') : '<span class="dungeon-summary-empty">待解析</span>'}</div></section>`).join('') || '<span class="dungeon-summary-empty">尚未解析到活动掉落</span>';
+  $('#activityDropStatus').textContent = activity.dropRecords?.length ? `已收集 ${activity.dropRecords.length} 条系统频道公告，按掉落来源分类。` : '仅在用户点击按钮后解析系统频道，不会自动扫描。';
+  const roundsInput = $('#activityRounds');
+  const bellCountInput = $('#activityBellCount');
+  if (roundsInput) roundsInput.value = session.rounds ?? '';
+  if (bellCountInput) bellCountInput.value = session.bellCount ?? '';
+}
+
+async function saveActivitySession() {
+  const button = $('#saveActivitySession');
+  const activity = (state.dungeonShenqi.activities || [])[0];
+  const rounds = Number($('#activityRounds').value);
+  const bellValue = $('#activityBellCount').value;
+  if (!activity || !Number.isInteger(rounds) || rounds < 0 || (bellValue !== '' && (!Number.isInteger(Number(bellValue)) || Number(bellValue) < 0))) {
+    toast('请填写零或正整数的活动轮次和铃铛数量');
+    return;
+  }
+  button.disabled = true;
+  button.textContent = '正在汇算…';
+  try {
+    const result = await api('/api/activity-session', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ activityName: activity.name, rounds, bellCount: bellValue === '' ? null : Number(bellValue) }) });
+    state.dungeonShenqi = result.dungeonShenqi;
+    renderDungeonShenqi();
+    toast('活动总收益已按单怪实测汇算');
+  } catch (error) {
+    toast('活动汇算失败：' + error.message);
+  } finally {
+    button.disabled = false;
+    button.textContent = '汇算本次活动总收益';
+  }
+}
+
+async function scanActivityDrops() {
+  const button = $('#scanActivityDrops');
+  button.disabled = true;
+  button.textContent = '正在解析…';
+  try {
+    const result = await api('/api/activity-drops/scan-default', { method: 'POST' });
+    state.dungeonShenqi = result.dungeonShenqi;
+    renderDungeonShenqi();
+    toast(result.addedCount ? `已新增 ${result.addedCount} 条活动掉落` : `没有新增活动掉落；跳过重复 ${result.duplicateCount} 条`);
+  } catch (error) {
+    toast('活动掉落解析失败：' + error.message);
+  } finally {
+    button.disabled = false;
+    button.textContent = '解析最新系统频道掉落';
+  }
+}
+
 function renderDungeonShenqi() {
   const data = state.dungeonShenqi;
   if (!data) return;
   const isDungeon = state.activeDsTab === 'dungeons';
   const isGhostHunt = state.activeDsTab === 'ghost-hunt';
+  const isActivities = state.activeDsTab === 'activities';
   const rows = isDungeon ? (data.dungeons || []) : (data.shenqi || []);
   $$('#dungeonShenqiTabs .point-shop-tab').forEach(tab => {
     tab.classList.toggle('active', tab.dataset.dsTab === state.activeDsTab);
@@ -511,19 +590,31 @@ function renderDungeonShenqi() {
   $('#dungeonDescription').textContent = isGhostHunt
     ? '个人十环经验、现金与储备收益持续沉淀。'
     : (data.description || '');
-  $('#dungeonRunImportPanel').hidden = !isDungeon;
+  const dungeonRunImportPanel = $('#dungeonRunImportPanel');
+  if (dungeonRunImportPanel) dungeonRunImportPanel.hidden = !isDungeon;
   $('#dungeonCards').hidden = !isDungeon;
-  $('#dungeonTablePanel').hidden = isDungeon || isGhostHunt;
+  $('#dungeonTablePanel').hidden = isDungeon || isGhostHunt || isActivities;
   $('#ghostHuntPanel').hidden = !isGhostHunt;
+  $('#fengYaoPanel').hidden = !isGhostHunt;
+  $('#activityPanel').hidden = !isActivities;
+  if (isActivities) {
+    $('#dungeonDescription').textContent = '降妖伏魔在2小时活动期内按实际轮次与铃铛数量汇总；掉落仅由用户手动扫描系统频道。';
+    activityHtml(data);
+    return;
+  }
   if (isGhostHunt) {
+    $('#dungeonDescription').textContent = '抓鬼十环、封妖每日收益、妖谱成本和概率掉落说明。';
     ghostHuntHtml(data);
+    fengYaoHtml(data);
     return;
   }
   if (isDungeon) {
     const select = $('#dungeonRunName');
-    const selected = select.value;
-    select.innerHTML = rows.map(row => `<option value="${esc(row.name)}">${esc(row.name)}</option>`).join('');
-    if (rows.some(row => row.name === selected)) select.value = selected;
+    if (select) {
+      const selected = select.value;
+      select.innerHTML = rows.map(row => `<option value="${esc(row.name)}">${esc(row.name)}</option>`).join('');
+      if (rows.some(row => row.name === selected)) select.value = selected;
+    }
     $('#dungeonCards').innerHTML = rows.map(dungeonCardHtml).join('');
     $('#dungeonEmpty').style.display = rows.length ? 'none' : 'block';
     return;
@@ -592,36 +683,6 @@ async function scanDungeonDrops() {
   } finally {
     button.disabled = false;
     button.textContent = '解析最新系统频道掉落';
-  }
-}
-
-async function importGhostHuntRun() {
-  const button = $('#importGhostHuntRun');
-  const content = $('#ghostHuntRunContent').value.trim();
-  if (!content) {
-    toast('请粘贴完整十环抓鬼信息');
-    return;
-  }
-  button.disabled = true;
-  button.textContent = '正在解析…';
-  try {
-    const result = await api('/api/ghost-hunt/runs/import', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ content, fileName: '抓鬼信息栏文本' })
-    });
-    state.dungeonShenqi = result.dungeonShenqi;
-    $('#ghostHuntStatus').textContent = result.duplicate
-      ? '这轮抓鬼信息已录入过，未重复计入。'
-      : '完整十环抓鬼经验已录入。';
-    if (!result.duplicate) $('#ghostHuntRunContent').value = '';
-    renderDungeonShenqi();
-    toast(result.duplicate ? '这轮抓鬼已录入过' : '十环抓鬼经验已录入');
-  } catch (error) {
-    $('#ghostHuntStatus').textContent = '录入失败：' + error.message;
-    toast('抓鬼录入失败：' + error.message);
-  } finally {
-    button.disabled = false;
-    button.textContent = '录入十环抓鬼经验';
   }
 }
 
@@ -1344,7 +1405,8 @@ on('#dungeonCards', 'click', event => {
 });
 on('#importDungeonRun', 'click', importDungeonRun);
 on('#scanDungeonDrops', 'click', scanDungeonDrops);
-on('#importGhostHuntRun', 'click', importGhostHuntRun);
+on('#saveActivitySession', 'click', saveActivitySession);
+on('#scanActivityDrops', 'click', scanActivityDrops);
 
 on('#pointShopTabs', 'click', event => {
   const tab = event.target.closest('[data-point-shop]');
