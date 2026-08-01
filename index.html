@@ -33,5 +33,17 @@
     <div class="section-heading"><div><p class="eyebrow">GAMEPLAY REVENUE LEDGER</p><h2>玩法收益</h2></div><p class="muted" id="dungeonTimestamp">等待加载数据</p></div>
     <p class="muted" id="dungeonDescription"></p>
     <div id="dungeonShenqiTabs" class="point-shop-tabs gameplay-revenue-tabs" aria-label="玩法收益子面板"><button class="point-shop-tab active" data-ds-tab="dungeons">副本</button><button class="point-shop-tab" data-ds-tab="shenqi">神器</button><button class="point-shop-tab" data-ds-tab="ghost-hunt">抓鬼</button></div>
-    <section id="dungeon-run-form">
-    <section id="dungeon_placeholder_removed_forlength"></section>
+    <section id="dungeonRunImportPanel" class="panel dungeon-run-import maint-only"><div><p class="eyebrow">DUNGEON FIELD RECORD</p><h3>录入本次副本信息</h3><p class="muted">每次只选择一个副本，粘贴该副本开始至结束期间的信息栏文本。只记录经验、浮盈经验、金币、储备金、积分与物品，不导入物价玉简。</p></div><div class="dungeon-run-form"><label>指定副本<select id="dungeonRunName"></select></label><label>信息栏文本<textarea id="dungeonRunContent" class="dungeon-run-content" placeholder="粘贴本次副本期间的“个人”系统信息，例如：你获得了24954点经验…"></textarea></label><div class="dungeon-run-actions"><button id="importDungeonRun" class="button primary">录入本次副本信息</button><button id="scanDungeonDrops" class="button ghost">解析最新系统频道掉落</button></div></div><p id="dungeonRunStatus" class="note">尚未录入副本实测。</p></section>
+    <section id="ghostHuntPanel" hidden>
+      <section class="panel ghost-hunt-overview"><div><p class="eyebrow">GHOST HUNT · 1–10 RINGS</p><h3>抓鬼十环汇总 <span class="ghost-hunt-double">双倍默认开启</span></h3><p class="muted">抓鬼共 1–10 环，经验逐环增加；第十环有概率获得道具。十环总收益优先展示，单环数据收纳在明细中。现金与储备金分列，储备金不折算现金。</p></div><div id="ghostHuntTotal" class="ghost-hunt-total"></div><button id="ghostHuntDetailToggle" class="dungeon-detail-toggle ghost-hunt-detail-toggle" type="button" aria-expanded="false">展开十环明细</button><div id="ghostHuntDetails" class="ghost-hunt-details" hidden><div class="ghost-hunt-rings" id="ghostHuntRings"></div><p id="ghostHuntEvidence" class="ghost-hunt-evidence"></p></div><section class="ghost-hunt-drops"><span>抓鬼奖励备注</span><div id="ghostHuntDrops"></div></section></section>
+      <section class="panel ghost-hunt-import maint-only"><div><p class="eyebrow">GHOST HUNT FIELD RECORD</p><h3>录入完整十环抓鬼</h3><p class="muted">粘贴同一轮抓鬼的个人信息栏文本，必须正好包含 1–10 环十条经验结算；不会影响副本、神器或物价资料。</p></div><div class="dungeon-run-form"><label>十环信息栏文本<textarea id="ghostHuntRunContent" class="dungeon-run-content" placeholder="粘贴本轮抓鬼的十条“你获得了…点经验”系统信息"></textarea></label><div class="dungeon-run-actions"><button id="importGhostHuntRun" class="button primary">录入十环抓鬼经验</button></div></div><p id="ghostHuntStatus" class="note">尚未录入抓鬼实测。</p></section>
+    </section>
+    <section class="panel point-shop-panel" id="dungeonTablePanel"><div class="dungeon-table-wrap point-shop-table-wrap"><table class="point-shop-table" id="dungeonTable"><thead id="dungeonTableHead"></thead><tbody id="dungeonTableBody"></tbody></table></div><div id="dungeonEmpty" class="empty">暂无玩法收益数据。</div></section>
+    <section id="dungeonCards" class="dungeon-card-grid" aria-label="副本资料单元"></section>
+  </section>
+  </main>
+  <div id="toast" class="toast" role="status"></div>
+  <script>window.PUBLIC_SNAPSHOT = "snapshot.9e2adf57f09de4f0.json";</script>
+  <script src="app.js"></script>
+</body>
+</html>
