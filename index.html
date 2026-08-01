@@ -7,6 +7,7 @@
   <title>三界物价录 · 只读分享</title>
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="bright-overrides.css">
+  <link rel="stylesheet" href="unified-overrides.css">
 </head>
 <body>
   <div class="sky-layer" aria-hidden="true"><i></i><i></i><i></i></div>
@@ -28,19 +29,23 @@
     <section id="view-dungeon-shenqi" class="view ledger-view gameplay-ledger-view">
     <div class="section-heading"><div><p class="eyebrow">DUNGEON &amp; ARTIFACT LEDGER</p><h2>副本神器</h2></div><p class="muted" id="dungeonTimestamp">等待加载数据</p></div>
     <p class="muted" id="dungeonDescription"></p>
-    <div id="dungeonShenqiTabs" class="point-shop-tabs gameplay-revenue-tabs" aria-label="玩法收益子面板"><button class="point-shop-tab active" data-ds-tab="dungeons">副本</button><button class="point-shop-tab" data-ds-tab="shenqi">神器</button><button class="point-shop-tab" data-ds-tab="ghost-hunt">抓鬼、封妖</button></div>
+    <div id="dungeonShenqiTabs" class="point-shop-tabs gameplay-revenue-tabs" aria-label="玩法收益子面板"><button class="point-shop-tab active" data-ds-tab="dungeons">副本</button><button class="point-shop-tab" data-ds-tab="shenqi">神器</button><button class="point-shop-tab" data-ds-tab="ghost-hunt">抓鬼、封妖</button><button class="point-shop-tab" data-ds-tab="activities">活动</button></div>
+
     <section id="ghostHuntPanel" hidden>
       <section class="panel ghost-hunt-overview"><div><p class="eyebrow">GHOST HUNT · 1–10 RINGS</p><h3>抓鬼十环汇总 <span class="ghost-hunt-double">双倍默认开启</span></h3><p class="muted">抓鬼共 1–10 环，经验逐环增加；第十环有概率获得道具。十环总收益优先展示，单环数据收纳在明细中。现金与储备金分列，储备金不折算现金。</p></div><div id="ghostHuntTotal" class="ghost-hunt-total"></div><button id="ghostHuntDetailToggle" class="dungeon-detail-toggle ghost-hunt-detail-toggle" type="button" aria-expanded="false">展开十环明细</button><div id="ghostHuntDetails" class="ghost-hunt-details" hidden><div class="ghost-hunt-rings" id="ghostHuntRings"></div><p id="ghostHuntEvidence" class="ghost-hunt-evidence"></p></div><section class="ghost-hunt-drops"><span>抓鬼奖励备注</span><div id="ghostHuntDrops"></div></section></section>
     </section>
     <section id="fengYaoPanel" hidden>
-      <section class="panel feng-yao-overview"><div><p class="eyebrow">FENG YAO · DAILY PLAN</p><h3>封妖收益 <span class="feng-yao-status">普通收益已确认 · 变异待补充</span></h3><p class="muted" id="fengYaoNotes"></p></div><div id="fengYaoDaily" class="feng-yao-daily"></div><section class="feng-yao-drops"><span>概率掉落</span><div id="fengYaoDrops"></div></section></section>
+      <section class="panel feng-yao-overview"><div><p class="eyebrow">FENG YAO · 25 MONSTERS</p><h3>封妖收益 <span class="feng-yao-status">普通、变异收益已确认</span></h3><p class="muted" id="fengYaoNotes"></p></div><div id="fengYaoDaily" class="feng-yao-daily"></div><section class="feng-yao-drops"><span>概率掉落</span><div id="fengYaoDrops"></div></section></section>
+    </section>
+    <section id="activityPanel" hidden>
+      <section class="panel activity-overview"><div><p class="eyebrow">ACTIVITY · DEMON SUBJUGATION</p><h3>降妖伏魔 <span class="activity-duration">活动时长 2 小时</span></h3><p class="muted" id="activityNotes"></p></div><div id="activityCards" class="activity-cards"></div><section class="activity-drops"><span>系统频道掉落</span><div id="activityDrops"></div><small id="activityDropStatus"></small></section></section>
     </section>
     <section class="panel point-shop-panel" id="dungeonTablePanel"><div class="dungeon-table-wrap point-shop-table-wrap"><table class="point-shop-table" id="dungeonTable"><thead id="dungeonTableHead"></thead><tbody id="dungeonTableBody"></tbody></table></div><div id="dungeonEmpty" class="empty">暂无玩法收益数据。</div></section>
     <section id="dungeonCards" class="dungeon-card-grid" aria-label="副本资料单元"></section>
   </section>
   </main>
   <div id="toast" class="toast" role="status"></div>
-  <script>window.PUBLIC_SNAPSHOT = "snapshot.9e2adf57f09de4f0.json";</script>
+  <script>window.PUBLIC_SNAPSHOT = "snapshot.bf5fdb0d9682e282.json";</script>
   <script src="app.js"></script>
 </body>
 </html>
