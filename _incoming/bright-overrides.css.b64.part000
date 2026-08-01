@@ -1,0 +1,88 @@
+/* Bright celestial jade palette */
+/* Bright celestial jade palette */
+:root{
+  --night:#dff8fa;
+  --night-2:#bdebf3;
+  --ink:#173b4a;
+  --muted:#5e7b84;
+  --jade:#168f83;
+  --jade-bright:#22aa92;
+  --cyan:#168fc0;
+  --ice:#eafcff;
+  --gold:#b58a2a;
+  --gold-bright:#d2a941;
+  --paper:#fffefa;
+  --line:rgba(181,138,42,.36);
+  --glass:rgba(248,255,253,.84);
+  --shadow:0 18px 42px rgba(36,113,133,.18)
+}
+.dungeon-metric.efficiency{border-color:rgba(22,143,131,.42);background:rgba(22,143,131,.08)}.dungeon-metric.efficiency>span,.dungeon-efficiency{color:#168f83}.dungeon-efficiency.pending{color:var(--muted)}
+body{
+  background:
+    radial-gradient(circle at 15% 5%,rgba(255,255,255,.95),transparent 27%),
+    radial-gradient(circle at 85% 12%,rgba(119,220,235,.4),transparent 28%),
+    linear-gradient(145deg,#dff8fa,#c8f1f4 48%,#b8e7ee);
+  color:var(--ink)
+}
+.sky-layer:before{
+  background-image:radial-gradient(circle,rgba(255,255,255,.8) 0 1px,transparent 1.6px);
+  opacity:.5
+}
+.sky-layer:after{
+  background:
+    linear-gradient(155deg,transparent 0 42%,rgba(105,188,197,.55) 42.4% 50%,transparent 50.4%),
+    linear-gradient(205deg,transparent 0 46%,rgba(71,159,175,.45) 46.4% 56%,transparent 56.4%),
+    linear-gradient(164deg,transparent 0 58%,rgba(42,130,150,.32) 58.4%);
+  opacity:.9
+}
+.sky-layer i{border-color:rgba(22,143,131,.16)}
+.topbar{
+  background:linear-gradient(180deg,rgba(255,255,255,.78),rgba(228,250,248,.48))
+}
+.brand-seal{border-color:var(--jade);color:#167d78;background:rgba(255,255,255,.45)}
+h1{color:#147b89;text-shadow:0 0 24px rgba(22,143,192,.16)}
+h2,h3{color:#176f81}
+.subtitle,.muted,.match-count,.matrix-price em{color:var(--muted)}
+.eyebrow{color:var(--jade)}
+.status{color:#267181;background:rgba(255,255,255,.57);border-color:rgba(22,143,131,.24)}
+.tabs{background:rgba(241,255,253,.7)}
+.tab{color:#5b7f88}
+.tab:hover,.tab.active{color:#147b89}
+.badge{background:rgba(34,170,146,.16);color:#127d78}
+.metric,.panel,.panel-jade,.price-section,.scroll-panel,.dark-panel{
+  background:linear-gradient(145deg,rgba(255,255,255,.86),rgba(228,250,247,.82))
+}
+.metric>span,.matrix-group>header small,.detail-title small,.detail-stat span,.detail-time span,.item-meta,.review-source,.file-drop small,.report-empty{color:var(--muted)}
+.metric strong,.matrix-group>header,.report-grid strong{color:#a77616}
+.control-label{color:#2e7080}
+.category-chip{background:rgba(255,255,255,.54);color:#4d7882;border-color:rgba(22,143,131,.3)}
+.category-chip:hover,.category-chip.active{color:#9a731e;background:rgba(255,244,204,.7);border-color:var(--gold)}
+.matrix-search{background:rgba(255,255,255,.52)}
+.matrix-search input{color:var(--ink)}
+.matrix-search input::placeholder{color:#7b9da5}
+.text-button{color:var(--jade)}
+.button.primary{background:linear-gradient(135deg,#2fb09b,#168f83);color:#effffb;border-color:#38a996}
+.button.ghost,.button.secondary{background:rgba(255,255,255,.65);color:#99721d;border-color:rgba(181,138,42,.48)}
+.price-card{
+  color:var(--ink);
+  background:linear-gradient(145deg,rgba(255,255,255,.94),rgba(216,246,242,.95));
+  border-color:rgba(22,143,131,.24);
+  box-shadow:inset 0 0 28px rgba(34,170,146,.08),0 10px 24px rgba(36,113,133,.13)
+}
+.price-card.sell{background:linear-gradient(145deg,rgba(255,255,250,.96),rgba(235,247,228,.95));border-color:rgba(181,138,42,.3)}
+.price-card:hover,.price-card.expanded{box-shadow:0 14px 34px rgba(36,113,133,.18),0 0 24px rgba(181,138,42,.12)}
+.item-icon{background:linear-gradient(145deg,rgba(181,235,240,.6),rgba(232,252,248,.85));border-color:rgba(22,143,131,.3);box-shadow:inset 0 0 0 3px rgba(255,255,255,.55)}
+.icon-fallback{background:linear-gradient(145deg,#46b9dd,#168fc0);color:#fff}
+.sell .icon-fallback{background:linear-gradient(145deg,#62c59f,#168f83)}
+.item-type{color:var(--jade)}
+.sell .item-type{color:#5b8e74}
+.matrix-item-name{color:#215164}
+.matrix-price,.detail-stat.hero strong{color:#a77616}
+.buy .matrix-price,.buy .detail-stat.hero strong{color:var(--jade)}
+.price-detail{background:linear-gradient(90deg,rgba(246,255,252,.98),rgba(222,247,245,.98));border-color:rgba(181,138,42,.46)}
+.price-detail.sell{background:linear-gradient(90deg,rgba(255,255,250,.98),rgba(235,247,228,.98))}
+.detail-stat strong{color:#24566a}
+.detail-time strong{color:#357487}
+.detail-mark{background:rgba(255,255,255,.6);border-color:var(--jade);color:var(--jade)}
+.file-drop{background:rgba(255,255,255,.42);border-color:rgba(181,138,42,.55)}
+.file-drop.drag{background:rgba(34,170,146,.08);bor
