@@ -1,0 +1,40 @@
+name: Assemble Parts
+on:
+  workflow_dispatch: {}
+permissions:
+  contents: write
+jobs:
+  assemble:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Assemble and commit
+        run: |
+          set -e
+          shopt -s nullglob
+          declare -A seen
+          for part in _incoming/*.b64.part*; do
+            [ -e "$part" ] || continue
+            base="${part%.b64.part*}"
+            base="${base#_incoming/}"
+            if [ -z "${seen[$base]:-}" ]; then
+              seen[$base]=1
+              mkdir -p "$(dirname "$base")"
+              cat "_incoming/${base}.b64.part"* | tr -d '\n' | base64 -d > "$base"
+              echo "Assembled: $base ($(stat -c%s "$base") bytes)"
+            fi
+          done
+          if [ -f _incoming/_delete.txt ]; then
+            while IFS= read -r p; do
+              [ -z "$p" ] && continue
+              rm -f -- "$p"
+              echo "Deleted: $p"
+            done < _incoming/_delete.txt
+          fi
+          rm -rf _incoming
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git status
+          git commit -m "Assemble large files from parts and clean up" || echo "Nothing to commit"
+          git push
