@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#c6f1f4">
+  <title>三界物价录 · 梦幻个人物价助手</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="bright-overrides.css">
+</head>
+<body>
+  <div class="sky-layer" aria-hidden="true"><i></i><i></i><i></i></div>
+  <header class="topbar">
+    <div class="brand-seal" aria-hidden="true">三<br>界</div>
+    <div class="brand-copy"><p class="eyebrow">PERSONAL MARKET LEDGER</p><h1>三界物价录</h1><p class="subtitle">珍宝阁 · 个人行情玉简</p></div>
+    <div class="status"><span class="status-dot"></span><span id="generatedAt">等待数据</span></div>
+  </header>
+  <nav class="tabs" aria-label="主导航"><div class="primary-tabs" role="group" aria-label="核心结论"><button class="tab primary-tab active" data-view="prices">物价玉简</button><button class="tab primary-tab" data-view="points">积分兑换</button><button class="tab primary-tab" data-view="dungeon-shenqi">玩法收�
